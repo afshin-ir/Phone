@@ -8,7 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
-import org.fossify.commons.dialogs.ChangeDateTimeFormatDialog
+import org.fossify.phone.dialogs.ChangeDateTimeFormatDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.baseConfig
 import org.fossify.commons.extensions.beVisibleIf
