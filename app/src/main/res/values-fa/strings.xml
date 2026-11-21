@@ -117,4 +117,20 @@
     <string name="faq_6_text_commons">این مشکل ممکن است از پشتیبانی ناقص برنامهٔ صفحهٔ اصلی دستگاه از تغییر نمادها باشد. اگر می‌توانید، برنامه را از فروشگاه Google Play یا از طریق یک ابزارک باز کنید. سپس رنگ نماد را به سبز پیش‌فرض ‎#106D1F برگردانید. اگر مشکل حل نشد، شاید لازم باشد برنامه را دوباره نصب کنید.</string>
     <string name="faq_9_title_commons">چطور چند مورد را هم‌زمان انتخاب کنم؟</string>
     <string name="faq_9_text_commons">برای انتخاب چند مورد چند راه دارید: روی یک مورد چند لحظه نگه دارید تا حالت انتخاب فعال شود، سپس روی موارد دیگر بزنید. همچنین می‌توانید انگشتتان را پس از نگه‌داشتن روی یک مورد، روی موارد دیگر بکشید. راه دیگر این است که دو مورد را جداگانه نگه دارید تا همهٔ موارد میان آن‌ها انتخاب شوند. برای انتخاب یا لغو انتخاب همهٔ موارد، پس از فعال شدن حالت انتخاب، روی شمارندهٔ موارد انتخاب‌شده در بالای صفحه بزنید.</string>
+    <!-- بازنویسی چند ترجمهٔ نامأنوس از کتابخانهٔ مشترک -->
+    <string name="favorites_tab">علاقه‌مندی‌ها</string>
+    <string name="favorites">علاقه‌مندی‌ها</string>
+    <string name="invalid_file_format">قالب فایل معتبر نیست.</string>
+    <string name="on_contact_click">با لمس مخاطب</string>
+    <string name="select_all">انتخاب همه</string>
+    <string name="copy_number_to_clipboard">کپی کردن شماره</string>
+    <string name="copy_to_clipboard">کپی کردن</string>
+    <string name="value_copied_to_clipboard">کپی شد.</string>
+    <string name="value_copied_to_clipboard_show">کپی شد:\n%s</string>
+    <string name="filter">فیلتر</string>
+    <string name="change_filter">تغییر فیلتر</string>
+    <string name="file_saved">فایل با موفقیت ذخیره شد.</string>
+    <string name="filename">نام فایل</string>
+    <string name="open_with">باز کردن با</string>
+    <string name="request_the_required_permissions">درخواست مجوزهای لازم</string>
 </resources>
