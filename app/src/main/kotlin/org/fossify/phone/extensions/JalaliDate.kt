@@ -1,10 +1,10 @@
 package org.fossify.phone.extensions
 
+import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.icu.util.PersianCalendar
+import android.icu.util.ULocale
 import android.text.format.DateUtils
-import android.content.Context
 import org.fossify.commons.extensions.baseConfig
 import org.fossify.commons.extensions.getTimeFormat
 import java.util.Date
@@ -17,8 +17,9 @@ fun Long.formatJalaliDateOrTime(
     hideTodaysDate: Boolean = true,
 ): String {
     val locale = Locale.forLanguageTag("fa-IR")
-    val calendar = PersianCalendar(locale).apply { timeInMillis = this@formatJalaliDateOrTime }
-    val currentCalendar = PersianCalendar(locale).apply { timeInMillis = System.currentTimeMillis() }
+    val calendarLocale = ULocale.forLocale(locale).setKeywordValue("calendar", "persian")
+    val calendar = Calendar.getInstance(calendarLocale).apply { timeInMillis = this@formatJalaliDateOrTime }
+    val currentCalendar = Calendar.getInstance(calendarLocale).apply { timeInMillis = System.currentTimeMillis() }
 
     if (hideTodaysDate && DateUtils.isToday(this)) {
         return SimpleDateFormat(context.getTimeFormat(), locale)
