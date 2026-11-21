@@ -54,12 +54,11 @@ jobs:
 
       - name: Extract release notes
         id: notes
-        env:
-          VERSION_NAME: ${{ github.event.head_commit.message }}
         run: |
           version_name="$(sed -n 's/^VERSION_NAME=//p' gradle.properties)"
+          echo "version_name=$version_name" >> "$GITHUB_OUTPUT"
           awk -v heading="## [$version_name]" '
-            $0 == heading { in_section=1; next }
+            index($0, heading) == 1 { in_section=1; next }
             in_section && /^## \[/ { exit }
             in_section { print }
           ' CHANGELOG.md > release-notes.md
@@ -72,8 +71,8 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64
         with:
           token: ${{ github.token }}
-          tag_name: ${{ vars.RELEASE_TAG || '' }}
-          name: ${{ vars.RELEASE_TAG || '' }}
+          tag_name: ${{ steps.notes.outputs.version_name }}
+          name: ${{ steps.notes.outputs.version_name }}
           body_path: release-notes.md
           draft: false
           files: app/build/outputs/apk/foss/release/*release.apk
