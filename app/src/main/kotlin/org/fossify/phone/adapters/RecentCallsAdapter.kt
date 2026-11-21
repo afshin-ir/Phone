@@ -507,7 +507,12 @@ class RecentCallsAdapter(
                 itemRecentsDateTime.apply {
                     text = if (refreshItemsListener == null) {
                         if (activity.config.useJalaliCalendar) {
-                            call.startTS.formatJalaliDateOrTime(context, hideTimeOnOtherDays = false, showCurrentYear = false, hideTodaysDate = false)
+                            call.startTS.formatJalaliDateOrTime(
+                                context = context,
+                                hideTimeOnOtherDays = false,
+                                showCurrentYear = false,
+                                hideTodaysDate = false
+                            )
                         } else {
                             call.startTS.formatDateOrTime(context, hideTimeOnOtherDays = false, showCurrentYear = false, hideTodaysDate = false)
                         }
