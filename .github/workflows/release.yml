@@ -6,12 +6,77 @@ on:
     paths:
       - ".fossify/release-marker.txt"
 
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.repository }}
+  cancel-in-progress: true
+
 jobs:
-  call-release-workflow:
-    name: Release
-    uses: FossifyOrg/.github/.github/workflows/release.yml@main
-    with:
-      track: ${{ vars.GPLAY_TRACK || 'beta' }}
-      rollout: ${{ vars.GPLAY_ROLLOUT || '0.05' }}
-      validate_only: ${{ vars.GPLAY_DRY_RUN == 'true' }}
-    secrets: inherit
+  release:
+    name: Build and publish FOSS APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Require signing secrets and decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+        run: |
+          for name in KEYSTORE_BASE64 KEY_ALIAS KEY_PASSWORD KEYSTORE_PASSWORD; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing release signing secret: $name"
+              exit 1
+            fi
+          done
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > app/release.jks
+          echo "SIGNING_STORE_FILE=release.jks" >> "$GITHUB_ENV"
+          echo "SIGNING_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "SIGNING_KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
+          echo "SIGNING_STORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Set up JDK
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Build signed release APK
+        run: ./gradlew assembleFossRelease
+
+      - name: Extract release notes
+        id: notes
+        run: |
+          version_name="$(sed -n 's/^VERSION_NAME=//p' gradle.properties)"
+          echo "version_name=$version_name" >> "$GITHUB_OUTPUT"
+          awk -v heading="## [$version_name]" '
+            index($0, heading) == 1 { in_section=1; next }
+            in_section && /^## \[/ { exit }
+            in_section { print }
+          ' CHANGELOG.md > release-notes.md
+          if [[ ! -s release-notes.md ]]; then
+            echo "::error::No changelog notes found for $version_name"
+            exit 1
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ steps.notes.outputs.version_name }}
+          name: ${{ steps.notes.outputs.version_name }}
+          body_path: release-notes.md
+          draft: false
+          files: app/build/outputs/apk/foss/release/*release.apk
+
+      - name: Clean up signing keystore
+        if: always()
+        run: rm -f app/release.jks

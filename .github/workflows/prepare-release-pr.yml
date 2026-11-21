@@ -1,15 +1,244 @@
 name: Prepare Release PR
 
 on:
-  repository_dispatch:
-    types: [prepare-release]
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "CHANGELOG.md"
+  workflow_dispatch:
+    inputs:
+      abi_apks:
+        description: "Reserve version codes and changelogs for per-ABI APKs"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-pr-${{ github.repository }}
+  cancel-in-progress: true
 
 jobs:
-  call-release-pr:
-    uses: FossifyOrg/.github/.github/workflows/prepare-release-pr.yml@main
-    secrets: inherit
+  release-pr:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, 'chore(release)') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Checkout .github repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: FossifyOrg/.github
+          path: .github-repo
+
+      - name: Get next version code
+        id: version-code
+        env:
+          ABI_APKS: ${{ github.event.inputs.abi_apks || 'false' }}
+        run: |
+          currentVersionCode=$(grep '^VERSION_CODE=' gradle.properties | cut -d= -f2)
+          if [[ "$ABI_APKS" == "true" ]]; then
+            nextVersionCode=$(( (currentVersionCode / 10 + 1) * 10 ))
+          else
+            nextVersionCode=$((currentVersionCode+1))
+          fi
+          echo "nextVersionCode=$nextVersionCode" >> $GITHUB_OUTPUT
+
+      - name: Check release history
+        id: release-history
+        run: |
+          if [[ -n "$(git tag --list)" ]]; then
+            echo "hasTags=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "hasTags=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: "20"
+
+      - name: Install keep-a-changelog parser
+        run: npm install keep-a-changelog@2.6.2
+
+      - name: Check unreleased changes
+        id: changelog
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          HAS_TAGS: ${{ steps.release-history.outputs.hasTags }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { execFileSync } = require('child_process');
+            const { parser } = require('keep-a-changelog');
+            const parsed = parser(fs.readFileSync('CHANGELOG.md', 'utf8'));
+            const unreleased = parsed.findRelease();
+            if (!unreleased) {
+              throw new Error('CHANGELOG.md has no Unreleased section.');
+            }
+
+            const version = fs.readFileSync('gradle.properties', 'utf8')
+              .match(/^VERSION_NAME=(.+)$/m)?.[1].trim();
+            if (!version) {
+              throw new Error('VERSION_NAME is missing from gradle.properties.');
+            }
+            core.setOutput('current_version', version);
+
+            if (process.env.HAS_TAGS === 'true') {
+              const files = execFileSync('git', [
+                'diff', '--name-only', '--no-renames', `refs/tags/${version}`, 'HEAD', '--',
+                'app/src/*/res/values-*/strings.xml',
+                'fastlane/metadata/android/*/title.txt',
+                'fastlane/metadata/android/*/short_description.txt',
+                'fastlane/metadata/android/*/full_description.txt',
+                ':(exclude)fastlane/metadata/android/en-US/*',
+              ], { encoding: 'utf8' }).trim();
+              const entries = unreleased.changes.get('changed') || [];
+              if (files && !entries.some(entry => entry.toString().includes('Updated translations'))) {
+                unreleased.changed('Updated translations');
+                fs.writeFileSync('CHANGELOG.md', parsed.toString());
+                core.info('Added Updated translations to Unreleased.');
+              }
+            }
+
+            const hasChanges = [...unreleased.changes.values()].some(entries => entries.length > 0);
+            core.setOutput('has_changes', hasChanges);
+            if (!hasChanges) {
+              core.info('No unreleased changelog entries or translation changes; skipping release preparation.');
+            }
+
+      - name: Calculate next version name
+        if: steps.release-history.outputs.hasTags == 'true' && steps.changelog.outputs.has_changes == 'true'
+        id: semantic-version
+        uses: ietf-tools/semver-action@c90370b2958652d71c06a3484129a4d423a6d8a8
+        with:
+          token: ${{ github.token }}
+          branch: ${{ github.event.repository.default_branch }}
+          fromTag: ${{ steps.changelog.outputs.current_version }}
+          noNewCommitBehavior: "warn"
+          noVersionBumpBehavior: "patch"
+          patchList: fix, bugfix, perf, refactor, test, tests, chore
+
+      - name: Get next version name
+        if: steps.changelog.outputs.has_changes == 'true'
+        id: version-name
+        env:
+          HAS_TAGS: ${{ steps.release-history.outputs.hasTags }}
+          SEMANTIC_VERSION: ${{ steps.semantic-version.outputs.nextStrict }}
+        run: |
+          if [[ "$HAS_TAGS" == "true" ]]; then
+            nextVersion="$SEMANTIC_VERSION"
+          else
+            nextVersion=$(grep '^VERSION_NAME=' gradle.properties | cut -d= -f2)
+          fi
+
+          if [[ -z "$nextVersion" ]]; then
+            echo "::error::Unable to determine the next release version"
+            exit 1
+          fi
+
+          echo "nextStrict=$nextVersion" >> "$GITHUB_OUTPUT"
+
+      - name: Check if release branch needs update
+        if: ${{ steps.version-name.outputs.nextStrict }}
+        id: skip-update
+        run: |
+          set -euo pipefail
+          MAIN="${{ github.event.repository.default_branch }}"
+          RELEASE="fossifybot/release"
+
+          if git rev-parse --verify -q "origin/$RELEASE"; then
+            if git merge-base --is-ancestor "origin/$MAIN" "origin/$RELEASE"; then
+              echo "needs_update=false" >> $GITHUB_OUTPUT
+              echo "Release branch is up-to-date."
+            else
+              echo "needs_update=true" >> $GITHUB_OUTPUT
+              echo "Release branch is behind the main branch."
+            fi
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "Release branch doesn't exist yet."
+          fi
+
+      - name: Update version files
+        if: ${{ steps.skip-update.outputs.needs_update == 'true' && steps.version-name.outputs.nextStrict }}
+        id: update-version
+        run: |
+          bash .github-repo/scripts/update-version.sh \
+            "${{ steps.version-name.outputs.nextStrict }}" \
+            "${{ steps.version-code.outputs.nextVersionCode }}" \
+            "${{ github.repository }}"
+
+      - name: Normalize changelog
+        if: ${{ steps.update-version.outcome == 'success' }}
+        run: |
+          npx keep-a-changelog --file="CHANGELOG.md" --no-v-prefix
+
+      - name: Extract changelog notes
+        if: ${{ steps.update-version.outcome == 'success' }}
+        id: extract_changelog
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          ABI_APKS: ${{ github.event.inputs.abi_apks || 'false' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { formatForGitHub, formatForFastlane } = require('./.github-repo/scripts/changelog-parser.js');
+
+            const changelogPath = path.join(process.env.GITHUB_WORKSPACE, 'CHANGELOG.md');
+            const tagVersion = "${{ steps.version-name.outputs.nextStrict }}";
+            if (!tagVersion) {
+              throw new Error('VERSION_NAME environment variable is not set.');
+            }
+
+            try {
+              const fastlaneNotes = formatForFastlane(changelogPath, tagVersion);
+              const versionCode = Number("${{ steps.version-code.outputs.nextVersionCode }}");
+              const metadataPath = path.join(process.env.GITHUB_WORKSPACE, 'fastlane', 'metadata', 'android', 'en-US', 'changelogs');
+              if (!fs.existsSync(metadataPath)) {
+                fs.mkdirSync(metadataPath, { recursive: true });
+              }
+              const offsets = process.env.ABI_APKS === 'true' ? [0, 1, 2, 3, 4] : [0];
+              for (const offset of offsets) {
+                fs.writeFileSync(path.join(metadataPath, `${versionCode + offset}.txt`), fastlaneNotes);
+              }
+
+              // Use GitHub format for the PR body
+              const notes = formatForGitHub(changelogPath, tagVersion,  null, process.env.GITHUB_REPOSITORY);
+              core.setOutput('changelog', notes);
+            } catch (error) {
+              core.setFailed(error.message);
+              return;
+            }
+
+      - name: Create or update PR
+        if: ${{ steps.update-version.outcome == 'success' && steps.extract_changelog.outcome == 'success' }}
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
+        with:
+          token: ${{ github.token }}
+          labels: "testers needed"
+          branch: fossifybot/release
+          commit-message: "chore(release): v${{ steps.version-name.outputs.nextStrict }} (${{ steps.version-code.outputs.nextVersionCode }})"
+          title: "chore(release): v${{ steps.version-name.outputs.nextStrict }} (${{ steps.version-code.outputs.nextVersionCode }})"
+          body: |
+            ## Release notes
+
+            ${{ steps.extract_changelog.outputs.changelog }}
+          add-paths: |
+            CHANGELOG.md
+            gradle.properties
+            .fossify/release-marker.txt
+            fastlane/metadata/android/en-US/changelogs/*.txt
