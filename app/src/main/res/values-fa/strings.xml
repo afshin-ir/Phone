@@ -80,7 +80,7 @@
     <string name="faq_3_text">Fossify Phone فقط مخاطبانی را نشان می‌دهد که شمارهٔ تلفن داشته باشند. مخاطبان بدون شمارهٔ تلفن در برنامه نمایش داده نمی‌شوند.</string>
     <!-- ترجمه‌های استفاده‌شده از کتابخانهٔ مشترک -->
     <string name="block_confirmation">آیا می‌خواهید شمارهٔ «%s» را مسدود کنید؟</string>
-    <string name="must_make_default_caller_id_app">برای مسدود کردن شماره‌های ناشناس، باید اجازهٔ شناسایی تماس‌گیرنده را بدهید.</string>
+    <string name="must_make_default_caller_id_app">برای مسدود کردن شماره‌های ناشناس، برنامه را به‌عنوان برنامهٔ شناسهٔ تماس‌گیرنده و مسدودسازی هرزنامه انتخاب کنید.</string>
     <string name="block_contact">مسدود کردن مخاطب</string>
     <string name="block_contact_success">مخاطب مسدود شد.</string>
     <string name="block_contact_fail">مسدود کردن مخاطب ممکن نشد.</string>
@@ -144,7 +144,7 @@
     <string name="invalid_font_file">فایل قلم معتبر نیست.</string>
     <string name="global_theme_success">پوستهٔ فعلی با موفقیت در همهٔ برنامه‌های فاسیفای اعمال شد. از این پس، تغییرات پوسته به‌طور خودکار در آن برنامه‌ها هم اعمال می‌شود.</string>
     <string name="all_fossify_apps">همهٔ برنامه‌های فاسیفای</string>
-    <string name="apply_to_all_apps">اعمال پوسته به همهٔ برنامه‌ها</string>
+    <string name="apply_to_all_apps">اعمال پوسته در همهٔ برنامه‌های فاسیفای</string>
     <string name="requires_fossify_thank_you">برای استفاده از این قابلیت، برنامهٔ Fossify Thank You را نصب کنید.</string>
     <string name="use_24_hour_time_format">استفاده از قالب ۲۴ساعته</string>
     <string name="app_icon_color_warning">هشدار: ممکن است بعضی از صفحه‌های اصلی دستگاه با تغییر رنگ نماد برنامه سازگار نباشند. اگر نماد ناپدید شد، در صورت امکان برنامه را از فروشگاه Google Play یا یک ابزارک باز کنید و رنگ نماد را به سبز پیش‌فرض ‎#106D1F برگردانید. اگر مشکل حل نشد، شاید لازم باشد برنامه را دوباره نصب کنید.</string>
@@ -157,10 +157,10 @@
     <string name="accent_color_black_and_white">رنگ تأکید در پوستهٔ سیاه‌وسفید</string>
     <string name="restore_defaults">بازگرداندن تنظیمات پیش‌فرض</string>
     <string name="default_color">رنگ پیش‌فرض</string>
-    <string name="block_unknown_calls">مسدود کردن تماس‌های شماره‌های خارج از مخاطبان</string>
-    <string name="block_unknown_messages">مسدود کردن پیام‌های شماره‌های خارج از مخاطبان</string>
-    <string name="block_hidden_calls">مسدود کردن تماس‌های شماره‌های پنهان</string>
-    <string name="block_hidden_messages">مسدود کردن پیام‌های شماره‌های پنهان</string>
+    <string name="block_unknown_calls">مسدود کردن تماس‌های شماره‌های ذخیره‌نشده</string>
+    <string name="block_unknown_messages">مسدود کردن پیام‌های شماره‌های ذخیره‌نشده</string>
+    <string name="block_hidden_calls">مسدود کردن تماس‌های شمارهٔ پنهان</string>
+    <string name="block_hidden_messages">مسدود کردن پیام‌های شمارهٔ پنهان</string>
     <string name="unblock">رفع مسدودیت</string>
     <string name="more_options">گزینه‌های بیشتر</string>
     <string name="copy">کپی</string>
@@ -174,9 +174,11 @@
     <string name="add_blocked_number_helper_text">شماره یا الگو را وارد کنید؛ برای نمونه ‎*12345* یا ‎+1*8888. تماس‌ها و پیام‌های شماره‌هایی که با الگو جور باشند مسدود می‌شوند.</string>
     <string name="name_taken">فایلی یا پوشه‌ای با این نام از قبل وجود دارد.</string>
     <string name="no_contacts_permission">برای ادامه، اجازهٔ دسترسی به مخاطبان لازم است.</string>
-    <string name="exporting_successful">شماره‌ها ذخیره شدند.</string>
-    <string name="exporting_failed">ذخیرهٔ شماره‌ها انجام نشد.</string>
-    <string name="importing_successful">شماره‌ها بازیابی شدند.</string>
+    <string name="exporting_successful">فایل با موفقیت ذخیره شد.</string>
+    <string name="exporting_failed">ذخیرهٔ فایل انجام نشد.</string>
+    <string name="importing_successful">اطلاعات با موفقیت بازیابی شد.</string>
     <string name="empty_name">لطفاً نامی وارد کنید.</string>
     <string name="filename_without_txt">نام فایل (بدون پسوند .txt)</string>
+    <string name="ok">تأیید</string>
+    <string name="blocked_numbers">شماره‌های مسدودشده</string>
 </resources>
