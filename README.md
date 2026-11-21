@@ -1,34 +1,52 @@
+<div dir="rtl" align="right">
+
 # Fossify Phone
-<img alt="Logo" src="graphics/icon.webp" width="120" />
 
-<a href='https://play.google.com/store/apps/details?id=org.fossify.phone'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a> <a href="https://f-droid.org/packages/org.fossify.phone/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on-en.svg" alt="Get it on F-Droid" height=80/></a> <a href="https://apt.izzysoft.de/fdroid/index/apk/org.fossify.phone"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height=80/></a>
+<p align="right">
+  <img alt="نشان برنامهٔ Fossify Phone" src="graphics/icon.webp" width="120" />
+</p>
 
-Empower your calls, and safeguard your data. Fossify Phone redefines the mobile app experience with unmatched privacy and efficiency. Free from ads and intrusive permissions, it's designed for seamless and secure everyday communication.
+**مدیریت تماس‌ها با حفظ حریم خصوصی و پشتیبانی از تقویم جلالی**
 
-📱 **YOUR PRIVACY, OUR PRIORITY:**  
-Welcome to the Fossify Phone App, where your digital privacy is paramount. Switch to a mobile experience that respects your data, ensuring your personal information remains secure and private.
+Fossify Phone برنامه‌ای رایگان و متن‌باز برای تماس و مدیریت تاریخچهٔ تماس‌هاست. این برنامه بدون تبلیغات و درخواست مجوزهای غیرضروری طراحی شده و ابزارهای کاربردی و تنظیمات گوناگونی برای استفادهٔ روزمره دارد.
 
-🚀 **SEAMLESS PERFORMANCE:**  
-The Fossify Phone App offers a fluid and responsive mobile interface, enhancing your phone's performance while safeguarding your privacy. Experience a lag-free, smooth user experience, optimized for efficiency and speed.
+<p align="right">
+  <a href="https://github.com/afshin-ir/Phone/releases/download/1.12.0/phone-23-foss-release.apk">📥 دانلود مستقیم نسخهٔ پایدار ۱٫۱۲٫۰</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/afshin-ir/Phone/releases">همهٔ نسخه‌ها</a>
+</p>
 
-🌐 **OPEN-SOURCE ASSURANCE:**  
-With the Fossify Phone App, transparency is at your fingertips. Built on an open-source foundation, our app allows you to review our code on GitHub, fostering trust and a community committed to privacy.
+## ✨ قابلیت‌های افزوده‌شده در نسخهٔ ۱٫۱۲٫۰
 
-🖼️ **TAILOR-MADE CUSTOMIZATION:**  
-Customize your mobile experience with the Fossify Phone App. Adjust your app settings for a personalized interface, from thematic designs to functional preferences. Enjoy a user interface that's intuitive and uniquely yours.
+- 🗓️ نمایش تاریخ‌های تاریخچهٔ تماس با **تقویم جلالی**؛ اگر زبان برنامه فارسی باشد، این تقویم به‌طور پیش‌فرض فعال است. هر زمان بخواهید می‌توانید آن را از تنظیمات تغییر دهید.
+- 📄 نام فایل خروجی تاریخچهٔ تماس به‌شکل <code dir="ltr">Call-History YYYY-MM-DD</code> است؛ تاریخ جلالی در نام فایل می‌آید و ساعت حذف شده است.
+- 🎨 ترجمه و روان‌سازی بخش‌های فارسیِ سفارشی‌سازی رنگ‌ها و پنجرهٔ تأیید تغییر رنگ‌های پیش‌فرض.
+- 🔤 تکمیل ترجمهٔ کادر انتخاب فونت و بخش مدیریت شماره‌های مسدودشده.
+- ✍️ اصلاح واژه‌گزینی، فاصله‌گذاری و رسم‌الخط فارسی در رابط کاربری.
 
-🔋 **EFFICIENT RESOURCE MANAGEMENT:**  
-The Fossify Phone App is designed for optimal resource usage, contributing to extended battery life. It's light on your phone's resources, ensuring your device runs efficiently with minimized battery drain.
+## 📱 دربارهٔ برنامه
 
-Download the Fossify Phone App now and step into a mobile world where privacy seamlessly blends with functionality. Your journey towards a safer, personalized mobile experience starts here.
+- 🔒 **حریم خصوصی:** بدون تبلیغات و با درخواست مجوزهایی که برای کارکرد برنامه لازم‌اند.
+- ⚡ **کارکرد روان:** رابطی ساده و واکنش‌گرا برای مدیریت تماس‌های روزانه.
+- 🧩 **متن‌باز:** کد برنامه در دسترس است و می‌توانید آن را بررسی کنید یا در توسعه‌اش مشارکت کنید.
+- 🎨 **سفارشی‌سازی:** ظاهر و تنظیمات برنامه را مطابق سلیقهٔ خود تغییر دهید.
 
-➡️ Explore more Fossify apps: https://www.fossify.org<br>
-➡️ Open-Source Code: https://www.github.com/FossifyOrg<br>
-➡️ Join the community on Reddit: https://www.reddit.com/r/Fossify<br>
-➡️ Connect on Telegram: https://t.me/Fossify
+## 🖼️ تصاویر برنامه
 
 <div align="center">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="30%">
+  <img alt="تصویر برنامه" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="30%">
+  <img alt="تصویر برنامه" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="30%">
+  <img alt="تصویر برنامه" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="30%">
+</div>
+
+## 🔗 پیوندها
+
+- 📦 [دریافت نسخهٔ پایدار](https://github.com/afshin-ir/Phone/releases/download/1.12.0/phone-23-foss-release.apk)
+- 🧾 [مشاهدهٔ همهٔ نسخه‌ها](https://github.com/afshin-ir/Phone/releases)
+- 💻 [مخزن کد این نسخه در گیت‌هاب](https://github.com/afshin-ir/Phone)
+- 🌐 [وبگاه Fossify](https://www.fossify.org)
+- 🧑‍💻 [مخزن اصلی سازمان Fossify](https://github.com/FossifyOrg)
+- 💬 [انجمن Fossify در ردیت](https://www.reddit.com/r/Fossify)
+- ✈️ [انجمن Fossify در تلگرام](https://t.me/Fossify)
+
 </div>
