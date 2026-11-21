@@ -1,16 +1,25 @@
 package org.fossify.phone.dialogs
 
+import android.icu.text.SimpleDateFormat
+import android.icu.util.ULocale
 import androidx.appcompat.app.AlertDialog
 import org.fossify.commons.extensions.*
 import org.fossify.phone.R
 import org.fossify.phone.activities.SimpleActivity
 import org.fossify.phone.databinding.DialogExportCallHistoryBinding
+import java.util.Date
+import java.util.Locale
 
 class ExportCallHistoryDialog(val activity: SimpleActivity, callback: (filename: String) -> Unit) {
 
     init {
+        val filenameDateLocale = ULocale.forLocale(Locale.forLanguageTag("fa-IR"))
+            .setKeywordValue("calendar", "persian")
+            .setKeywordValue("numbers", "latn")
+        val todayJalali = SimpleDateFormat("yyyy-MM-dd", filenameDateLocale).format(Date())
+
         val binding = DialogExportCallHistoryBinding.inflate(activity.layoutInflater).apply {
-            exportCallHistoryFilename.setText("call_history_${activity.getCurrentFormattedDateTime()}")
+            exportCallHistoryFilename.setText("Call-History $todayJalali")
         }
 
         activity.getAlertDialogBuilder().setPositiveButton(R.string.ok, null).setNegativeButton(R.string.cancel, null).apply {
