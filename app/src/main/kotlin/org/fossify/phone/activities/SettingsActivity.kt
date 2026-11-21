@@ -209,9 +209,11 @@ class SettingsActivity : SimpleActivity() {
     private fun setupJalaliCalendar() {
         binding.apply {
             settingsUseJalaliCalendar.isChecked = config.useJalaliCalendar
+            settingsUseJalaliCalendar.setOnCheckedChangeListener { _, isChecked ->
+                config.useJalaliCalendar = isChecked
+            }
             settingsUseJalaliCalendarHolder.setOnClickListener {
                 settingsUseJalaliCalendar.toggle()
-                config.useJalaliCalendar = settingsUseJalaliCalendar.isChecked
             }
         }
     }
