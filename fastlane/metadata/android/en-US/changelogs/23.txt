@@ -1,0 +1,3 @@
+Jalali calendar support in call history
+Improved Persian translations for settings, fonts, and blocked numbers
+Call history exports use Jalali-dated filenames without a time
