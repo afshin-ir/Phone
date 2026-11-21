@@ -55,6 +55,7 @@ import org.fossify.phone.extensions.areMultipleSIMsAvailable
 import org.fossify.phone.extensions.callContactWithSimWithConfirmationCheck
 import org.fossify.phone.extensions.config
 import org.fossify.phone.extensions.getDayCode
+import org.fossify.phone.extensions.formatJalaliDateOrTime
 import org.fossify.phone.extensions.startAddContactIntent
 import org.fossify.phone.extensions.startCallWithConfirmationCheck
 import org.fossify.phone.extensions.startContactDetailsIntent
@@ -505,7 +506,11 @@ class RecentCallsAdapter(
 
                 itemRecentsDateTime.apply {
                     text = if (refreshItemsListener == null) {
-                        call.startTS.formatDateOrTime(context, hideTimeOnOtherDays = false, showCurrentYear = false, hideTodaysDate = false)
+                        if (activity.config.useJalaliCalendar) {
+                            call.startTS.formatJalaliDateOrTime(context, hideTimeOnOtherDays = false, showCurrentYear = false, hideTodaysDate = false)
+                        } else {
+                            call.startTS.formatDateOrTime(context, hideTimeOnOtherDays = false, showCurrentYear = false, hideTodaysDate = false)
+                        }
                     } else {
                         call.startTS.formatTime(activity)
                     }
@@ -624,11 +629,19 @@ class RecentCallsAdapter(
                 text = when (date.dayCode) {
                     now.millis.getDayCode() -> activity.getString(R.string.today)
                     now.minusDays(1).millis.getDayCode() -> activity.getString(R.string.yesterday)
-                    else -> date.timestamp.formatDateOrTime(
-                        context = activity,
-                        hideTimeOnOtherDays = true,
-                        showCurrentYear = false
-                    )
+                    else -> if (activity.config.useJalaliCalendar) {
+                        date.timestamp.formatJalaliDateOrTime(
+                            context = activity,
+                            hideTimeOnOtherDays = true,
+                            showCurrentYear = false
+                        )
+                    } else {
+                        date.timestamp.formatDateOrTime(
+                            context = activity,
+                            hideTimeOnOtherDays = true,
+                            showCurrentYear = false
+                        )
+                    }
                 }
             }
         }

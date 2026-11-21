@@ -104,6 +104,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(GROUP_SUBSEQUENT_CALLS, true)
         set(groupSubsequentCalls) = prefs.edit().putBoolean(GROUP_SUBSEQUENT_CALLS, groupSubsequentCalls).apply()
 
+    var useJalaliCalendar: Boolean
+        get() = prefs.getBoolean(USE_JALALI_CALENDAR, context.resources.configuration.locales[0].language == "fa")
+        set(useJalaliCalendar) = prefs.edit().putBoolean(USE_JALALI_CALENDAR, useJalaliCalendar).apply()
+
     var openDialPadAtLaunch: Boolean
         get() = prefs.getBoolean(OPEN_DIAL_PAD_AT_LAUNCH, false)
         set(openDialPad) = prefs.edit().putBoolean(OPEN_DIAL_PAD_AT_LAUNCH, openDialPad).apply()

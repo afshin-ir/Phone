@@ -97,6 +97,7 @@ class SettingsActivity : SimpleActivity() {
         setupManageBlockedNumbers()
         setupManageSpeedDial()
         setupChangeDateTimeFormat()
+        setupJalaliCalendar()
         setupFontSize()
         setupManageShownTabs()
         setupDefaultTab()
@@ -202,6 +203,16 @@ class SettingsActivity : SimpleActivity() {
     private fun setupChangeDateTimeFormat() {
         binding.settingsChangeDateTimeFormatHolder.setOnClickListener {
             ChangeDateTimeFormatDialog(this) {}
+        }
+    }
+
+    private fun setupJalaliCalendar() {
+        binding.apply {
+            settingsUseJalaliCalendar.isChecked = config.useJalaliCalendar
+            settingsUseJalaliCalendarHolder.setOnClickListener {
+                settingsUseJalaliCalendar.toggle()
+                config.useJalaliCalendar = settingsUseJalaliCalendar.isChecked
+            }
         }
     }
 
