@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added Jalali calendar support for call history and date format previews
+- Added Persian translations for customization, font selection, and blocked number management
+
+### Changed
+- Exported call history filenames now use `Call-History yyyy-MM-dd` without a time
+- Improved Persian wording and spelling across the interface
+
 ## [1.11.1] - 2026-02-01
 ### Changed
 - Updated translations
