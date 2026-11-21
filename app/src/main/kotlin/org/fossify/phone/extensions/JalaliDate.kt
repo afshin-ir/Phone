@@ -22,8 +22,7 @@ fun Long.formatJalaliDateOrTime(
     val currentCalendar = Calendar.getInstance(calendarLocale).apply { timeInMillis = System.currentTimeMillis() }
 
     if (hideTodaysDate && DateUtils.isToday(this)) {
-        return SimpleDateFormat(context.getTimeFormat(), locale)
-            .apply { this.calendar = calendar }
+        return SimpleDateFormat(context.getTimeFormat(), calendarLocale)
             .format(Date(this))
     }
 
@@ -35,7 +34,6 @@ fun Long.formatJalaliDateOrTime(
         format += ", ${context.getTimeFormat()}"
     }
 
-    return SimpleDateFormat(format, locale)
-        .apply { this.calendar = calendar }
+    return SimpleDateFormat(format, calendarLocale)
         .format(Date(this))
 }
