@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-11-21
+
 ### Added
 - Added Jalali calendar support for call history and date format choices
 - Added Persian translations for customization, font selection, and blocked number management
@@ -280,7 +282,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#645]: https://github.com/FossifyOrg/Phone/issues/645
 [#696]: https://github.com/FossifyOrg/Phone/issues/696
 
-[Unreleased]: https://github.com/FossifyOrg/Phone/compare/1.11.1...HEAD
+[Unreleased]: https://github.com/FossifyOrg/Phone/compare/1.12.0...HEAD
+[1.12.0]: https://github.com/FossifyOrg/Phone/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/FossifyOrg/Phone/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/FossifyOrg/Phone/compare/1.10.0...1.11.0
 [1.10.0]: https://github.com/FossifyOrg/Phone/compare/1.9.0...1.10.0
