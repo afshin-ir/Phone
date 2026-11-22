@@ -1,2 +1,2 @@
-# Auto-generated release trigger. Retry attempt 2 for 1.12.4 with versioned APK filename.
-1.12.4
+# Auto-generated release trigger. Build 1.12.5 with localized grouped counts and a vertical separator.
+1.12.5
