@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import org.fossify.commons.adapters.MyRecyclerViewAdapter
 import org.fossify.commons.extensions.areSystemAnimationsEnabled
-import org.fossify.commons.extensions.baseConfig
 import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.beVisibleIf
