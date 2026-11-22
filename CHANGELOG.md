@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.3] - 2026-11-22
+
+### Improved
+- Contacts and favorites now share one address-book load instead of each re-reading contacts whenever the app resumes.
+- Contact data refreshes when the address book changes; the call history continues to refresh when returning to the app.
+
 ## [1.12.2] - 2026-11-22
 
 ### Changed
