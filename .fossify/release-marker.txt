@@ -1,2 +1,2 @@
-# Auto-generated file. DO NOT EDIT. Retry Phone 1.12.3 with masked signing values.
-1.12.3
+# Auto-generated file. DO NOT EDIT. Retry Phone 1.12.4 with masked signing values.
+1.12.4
