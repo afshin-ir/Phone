@@ -1,2 +1,2 @@
-# Auto-generated release trigger. Version 1.12.4; use a versioned APK filename.
+# Auto-generated release trigger. Retry attempt 2 for 1.12.4 with versioned APK filename.
 1.12.4
