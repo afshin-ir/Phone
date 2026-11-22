@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-11-22
+
+### Improved
+- Reduced repeated address book loading while preparing call history.
+- Removed the extra delayed call history refresh after opening the app.
+
 ## [1.12.0] - 2026-11-21
 
 ### Added
@@ -282,7 +288,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#645]: https://github.com/FossifyOrg/Phone/issues/645
 [#696]: https://github.com/FossifyOrg/Phone/issues/696
 
-[Unreleased]: https://github.com/FossifyOrg/Phone/compare/1.12.0...HEAD
+[Unreleased]: https://github.com/afshin-ir/Phone/compare/1.12.1...HEAD
+[1.12.1]: https://github.com/afshin-ir/Phone/compare/1.12.0...1.12.1
 [1.12.0]: https://github.com/FossifyOrg/Phone/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/FossifyOrg/Phone/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/FossifyOrg/Phone/compare/1.10.0...1.11.0
