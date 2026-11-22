@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-11-22
+
+### Changed
+- Persian-language dialpads now display Persian numerals; tapping them still enters standard phone digits for dialing.
+
 ## [1.12.1] - 2026-11-22
 
 ### Improved
@@ -288,7 +293,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#645]: https://github.com/FossifyOrg/Phone/issues/645
 [#696]: https://github.com/FossifyOrg/Phone/issues/696
 
-[Unreleased]: https://github.com/afshin-ir/Phone/compare/1.12.1...HEAD
+[Unreleased]: https://github.com/afshin-ir/Phone/compare/1.12.2...HEAD
+[1.12.2]: https://github.com/afshin-ir/Phone/compare/1.12.1...1.12.2
 [1.12.1]: https://github.com/afshin-ir/Phone/compare/1.12.0...1.12.1
 [1.12.0]: https://github.com/FossifyOrg/Phone/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/FossifyOrg/Phone/compare/1.11.0...1.11.1
