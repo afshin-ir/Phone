@@ -181,4 +181,7 @@
     <string name="filename_without_txt">نام فایل (بدون پسوند .txt)</string>
     <string name="ok">تأیید</string>
     <string name="blocked_numbers">شماره‌های مسدودشده</string>
+    <string name="call_duration_hours">%1$s ساعت</string>
+    <string name="call_duration_minutes">%1$s دقیقه</string>
+    <string name="call_duration_seconds">%1$s ثانیه</string>
 </resources>
