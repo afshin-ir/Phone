@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.4] - 2026-11-22
+
+### Improved
+- Persian call durations are now shown with full unit names, such as “1 minute and 19 seconds”.
+
+
 ## [1.12.3] - 2026-11-22
 
 ### Improved
