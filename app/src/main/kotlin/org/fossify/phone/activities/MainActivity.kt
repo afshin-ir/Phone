@@ -3,6 +3,8 @@ package org.fossify.phone.activities
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.database.ContentObserver
+import android.net.Uri
 import android.content.pm.ShortcutInfo
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
@@ -10,6 +12,8 @@ import android.graphics.drawable.Icon
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.provider.ContactsContract
 import android.provider.Settings
 import android.widget.ImageView
 import android.widget.TextView
@@ -59,9 +63,29 @@ class MainActivity : SimpleActivity() {
     private var storedStartNameWithSurname = false
     var cachedContacts = ArrayList<Contact>()
 
+    private var contactsNeedRefresh = true
+    private var contactsRefreshInProgress = false
+    private var contactsRefreshPending = false
+    private var isActivityResumed = false
+    private val contactsRefreshCallbacks = mutableListOf<() -> Unit>()
+    private val contactsRefreshHandler = Handler(Looper.getMainLooper())
+    private val contactsRefreshRunnable = Runnable {
+        if (isActivityResumed) {
+            refreshContactFragments(force = true)
+        }
+    }
+    private val contactsObserver = object : ContentObserver(contactsRefreshHandler) {
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+            contactsNeedRefresh = true
+            contactsRefreshHandler.removeCallbacks(contactsRefreshRunnable)
+            contactsRefreshHandler.postDelayed(contactsRefreshRunnable, 500L)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        contentResolver.registerContentObserver(ContactsContract.Contacts.CONTENT_URI, true, contactsObserver)
         appLaunched(BuildConfig.APPLICATION_ID)
         setupOptionsMenu()
         refreshMenuItems()
@@ -108,6 +132,7 @@ class MainActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
+        isActivityResumed = true
         if (storedShowTabs != config.showTabs) {
             config.lastUsedViewPagerPage = 0
             System.exit(0)
@@ -148,6 +173,7 @@ class MainActivity : SimpleActivity() {
     }
 
     override fun onPause() {
+        isActivityResumed = false
         super.onPause()
         storedShowTabs = config.showTabs
         storedStartNameWithSurname = config.startNameWithSurname
@@ -186,6 +212,8 @@ class MainActivity : SimpleActivity() {
     }
 
     override fun onDestroy() {
+        contactsRefreshHandler.removeCallbacks(contactsRefreshRunnable)
+        contentResolver.unregisterContentObserver(contactsObserver)
         super.onDestroy()
         EventBus.getDefault().unregister(this)
     }
@@ -256,7 +284,7 @@ class MainActivity : SimpleActivity() {
     private fun changeViewType() {
         ChangeViewTypeDialog(this) {
             refreshMenuItems()
-            getFavoritesFragment()?.refreshItems()
+            getFavoritesFragment()?.viewTypeChanged()
         }
     }
 
@@ -266,6 +294,7 @@ class MainActivity : SimpleActivity() {
 
     private fun checkContactPermissions() {
         handlePermission(PERMISSION_READ_CONTACTS) {
+            contactsNeedRefresh = true
             initFragments()
         }
     }
@@ -490,9 +519,9 @@ class MainActivity : SimpleActivity() {
     }
 
     fun refreshFragments() {
-        cacheContacts()
-        getContactsFragment()?.refreshItems()
-        getFavoritesFragment()?.refreshItems()
+        if (contactsNeedRefresh) {
+            refreshContactFragments()
+        }
         getRecentsFragment()?.refreshItems()
     }
 
@@ -576,13 +605,7 @@ class MainActivity : SimpleActivity() {
 
     private fun showSortingDialog(showCustomSorting: Boolean) {
         ChangeSortingDialog(this, showCustomSorting) {
-            getFavoritesFragment()?.refreshItems {
-                if (binding.mainMenu.isSearchOpen) {
-                    getCurrentFragment()?.onSearchQueryChanged(binding.mainMenu.getCurrentQuery())
-                }
-            }
-
-            getContactsFragment()?.refreshItems {
+            refreshContactFragments(force = true) {
                 if (binding.mainMenu.isSearchOpen) {
                     getCurrentFragment()?.onSearchQueryChanged(binding.mainMenu.getCurrentQuery())
                 }
@@ -592,13 +615,7 @@ class MainActivity : SimpleActivity() {
 
     private fun showFilterDialog() {
         FilterContactSourcesDialog(this) {
-            getFavoritesFragment()?.refreshItems {
-                if (binding.mainMenu.isSearchOpen) {
-                    getCurrentFragment()?.onSearchQueryChanged(binding.mainMenu.getCurrentQuery())
-                }
-            }
-
-            getContactsFragment()?.refreshItems {
+            refreshContactFragments(force = true) {
                 if (binding.mainMenu.isSearchOpen) {
                     getCurrentFragment()?.onSearchQueryChanged(binding.mainMenu.getCurrentQuery())
                 }
@@ -612,9 +629,30 @@ class MainActivity : SimpleActivity() {
         }
     }
 
-    fun cacheContacts() {
+    fun refreshContactFragments(force: Boolean = false, callback: (() -> Unit)? = null) {
+        if (force) {
+            contactsNeedRefresh = true
+        }
+        callback?.let(contactsRefreshCallbacks::add)
+
+        if (contactsRefreshInProgress) {
+            if (force) {
+                contactsRefreshPending = true
+            }
+            return
+        }
+
+        if (!contactsNeedRefresh) {
+            contactsRefreshHandler.removeCallbacks(contactsRefreshRunnable)
+            displayCachedContacts()
+            runContactRefreshCallbacks()
+            return
+        }
+
+        contactsRefreshHandler.removeCallbacks(contactsRefreshRunnable)
+        contactsRefreshInProgress = true
         val privateCursor = getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
-        ContactsHelper(this).getContacts(getAll = true, showOnlyContactsWithNumbers = true) { contacts ->
+        ContactsHelper(this).getContacts(showOnlyContactsWithNumbers = true) { contacts ->
             if (SMT_PRIVATE !in config.ignoredContactSources) {
                 val privateContacts = MyContactsContentProvider.getContacts(this, privateCursor)
                 if (privateContacts.isNotEmpty()) {
@@ -623,12 +661,32 @@ class MainActivity : SimpleActivity() {
                 }
             }
 
-            try {
-                cachedContacts.clear()
-                cachedContacts.addAll(contacts)
-            } catch (ignored: Exception) {
+            cachedContacts.clear()
+            cachedContacts.addAll(contacts)
+            contactsRefreshInProgress = false
+
+            if (contactsRefreshPending) {
+                contactsRefreshPending = false
+                contactsNeedRefresh = true
+                refreshContactFragments()
+                return@getContacts
             }
+
+            contactsNeedRefresh = false
+            displayCachedContacts()
+            runContactRefreshCallbacks()
         }
+    }
+
+    private fun displayCachedContacts() {
+        getContactsFragment()?.showContacts(cachedContacts)
+        getFavoritesFragment()?.showContacts(cachedContacts)
+    }
+
+    private fun runContactRefreshCallbacks() {
+        val callbacks = contactsRefreshCallbacks.toList()
+        contactsRefreshCallbacks.clear()
+        callbacks.forEach { it() }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
