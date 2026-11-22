@@ -96,4 +96,7 @@
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
     -->
+    <string name="call_duration_hours">%1$s hours</string>
+    <string name="call_duration_minutes">%1$s minutes</string>
+    <string name="call_duration_seconds">%1$s seconds</string>
 </resources>
