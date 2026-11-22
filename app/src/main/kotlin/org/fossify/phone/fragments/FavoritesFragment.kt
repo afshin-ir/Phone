@@ -13,7 +13,6 @@ import org.fossify.commons.extensions.getColorStateList
 import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.getMyContactsCursor
 import org.fossify.commons.extensions.hasPermission
-import org.fossify.commons.helpers.ContactsHelper
 import org.fossify.commons.helpers.Converters
 import org.fossify.commons.helpers.MyContactsContentProvider
 import org.fossify.commons.helpers.PERMISSION_READ_CONTACTS
@@ -69,31 +68,36 @@ class FavoritesFragment(context: Context, attributeSet: AttributeSet) : MyViewPa
     }
 
     override fun refreshItems(invalidate: Boolean, callback: (() -> Unit)?) {
-        ContactsHelper(context).getContacts(showOnlyContactsWithNumbers = true) { contacts ->
-            allContacts = contacts
+        (activity as? MainActivity)?.refreshContactFragments(force = true, callback = callback)
+    }
 
-            if (SMT_PRIVATE !in context.baseConfig.ignoredContactSources) {
-                val privateCursor = context?.getMyContactsCursor(favoritesOnly = true, withPhoneNumbersOnly = true)
-                val privateContacts = MyContactsContentProvider.getContacts(context, privateCursor).map {
-                    it.copy(starred = 1)
-                }
-                if (privateContacts.isNotEmpty()) {
-                    allContacts.addAll(privateContacts)
-                    allContacts.sort()
-                }
-            }
-            val favorites = contacts.filter { it.starred == 1 } as ArrayList<Contact>
+    fun showContacts(contacts: ArrayList<Contact>) {
+        allContacts = ArrayList(contacts)
 
-            allContacts = if (activity!!.config.isCustomOrderSelected) {
-                sortByCustomOrder(favorites)
-            } else {
-                favorites
+        if (SMT_PRIVATE !in context.baseConfig.ignoredContactSources) {
+            val privateCursor = context.getMyContactsCursor(favoritesOnly = true, withPhoneNumbersOnly = true)
+            val privateContacts = MyContactsContentProvider.getContacts(context, privateCursor).map {
+                it.copy(starred = 1)
             }
+            if (privateContacts.isNotEmpty()) {
+                allContacts.addAll(privateContacts)
+                allContacts.sort()
+            }
+        }
 
-            activity?.runOnUiThread {
-                gotContacts(allContacts)
-                callback?.invoke()
-            }
+        val favorites = allContacts.filter { it.starred == 1 } as ArrayList<Contact>
+        allContacts = if (activity!!.config.isCustomOrderSelected) {
+            sortByCustomOrder(favorites)
+        } else {
+            favorites
+        }
+        gotContacts(allContacts)
+    }
+
+    fun viewTypeChanged() {
+        setViewType(context.config.viewType)
+        if (allContacts.isNotEmpty()) {
+            updateListAdapter()
         }
     }
 
