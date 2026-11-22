@@ -39,9 +39,6 @@ jobs:
           done
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > app/release.jks
           echo "SIGNING_STORE_FILE=release.jks" >> "$GITHUB_ENV"
-          echo "SIGNING_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
-          echo "SIGNING_KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
-          echo "SIGNING_STORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
 
       - name: Set up JDK
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
@@ -50,6 +47,10 @@ jobs:
           java-version: "17"
 
       - name: Build signed release APK
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: ./gradlew assembleFossRelease
 
       - name: Extract release notes
