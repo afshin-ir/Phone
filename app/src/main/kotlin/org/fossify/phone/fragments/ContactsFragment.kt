@@ -10,14 +10,10 @@ import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getColorStateList
 import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.getMyContactsCursor
 import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.extensions.underlineText
-import org.fossify.commons.helpers.ContactsHelper
-import org.fossify.commons.helpers.MyContactsContentProvider
 import org.fossify.commons.helpers.PERMISSION_READ_CONTACTS
-import org.fossify.commons.helpers.SMT_PRIVATE
 import org.fossify.commons.helpers.getProperText
 import org.fossify.commons.models.contacts.Contact
 import org.fossify.phone.R
@@ -86,24 +82,12 @@ class ContactsFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
     }
 
     override fun refreshItems(invalidate: Boolean, callback: (() -> Unit)?) {
-        val privateCursor = context?.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
-        ContactsHelper(context).getContacts(showOnlyContactsWithNumbers = true) { contacts ->
-            allContacts = contacts
+        (activity as? MainActivity)?.refreshContactFragments(force = true, callback = callback)
+    }
 
-            if (SMT_PRIVATE !in context.baseConfig.ignoredContactSources) {
-                val privateContacts = MyContactsContentProvider.getContacts(context, privateCursor)
-                if (privateContacts.isNotEmpty()) {
-                    allContacts.addAll(privateContacts)
-                    allContacts.sort()
-                }
-            }
-            (activity as MainActivity).cacheContacts()
-
-            activity?.runOnUiThread {
-                gotContacts(contacts)
-                callback?.invoke()
-            }
-        }
+    fun showContacts(contacts: ArrayList<Contact>) {
+        allContacts = ArrayList(contacts)
+        gotContacts(allContacts)
     }
 
     private fun gotContacts(contacts: ArrayList<Contact>) {
@@ -187,11 +171,7 @@ class ContactsFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
             if (it) {
                 binding.fragmentPlaceholder.text = context.getString(R.string.no_contacts_found)
                 binding.fragmentPlaceholder2.text = context.getString(R.string.create_new_contact)
-                ContactsHelper(context).getContacts(showOnlyContactsWithNumbers = true) { contacts ->
-                    activity?.runOnUiThread {
-                        gotContacts(contacts)
-                    }
-                }
+                (activity as? MainActivity)?.refreshContactFragments(force = true)
             }
         }
     }
