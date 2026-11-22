@@ -1,2 +1,2 @@
-# Auto-generated file. DO NOT EDIT. Retry Phone 1.12.4 with masked signing values.
+# Auto-generated release trigger. Version 1.12.4; use a versioned APK filename.
 1.12.4
