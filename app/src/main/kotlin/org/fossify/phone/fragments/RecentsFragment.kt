@@ -10,7 +10,6 @@ import org.fossify.commons.extensions.getMyContactsCursor
 import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.extensions.isVisible
 import org.fossify.commons.extensions.underlineText
-import org.fossify.commons.helpers.ContactsHelper
 import org.fossify.commons.helpers.MyContactsContentProvider
 import org.fossify.commons.helpers.PERMISSION_READ_CALL_LOG
 import org.fossify.commons.helpers.SMT_PRIVATE
@@ -222,19 +221,17 @@ class RecentsFragment(
             return
         }
 
-        ContactsHelper(context).getContacts(showOnlyContactsWithNumbers = true) { contacts ->
-            ensureBackgroundThread {
-                val privateContacts = getPrivateContacts()
-                val updatedCalls = updateNamesIfEmpty(
-                    calls = maybeFilterPrivateCalls(calls, privateContacts),
-                    contacts = contacts,
-                    privateContacts = privateContacts
-                )
+        // RecentsHelper already resolves call names and photos while reading the call log.
+        // Avoid querying the full address book a second time just to prepare the date groups.
+        if (SMT_PRIVATE !in context.baseConfig.ignoredContactSources) {
+            callback(groupCallsByDate(calls))
+            return
+        }
 
-                callback(
-                    groupCallsByDate(updatedCalls)
-                )
-            }
+        ensureBackgroundThread {
+            val privateContacts = getPrivateContacts()
+            val visibleCalls = maybeFilterPrivateCalls(calls, privateContacts)
+            callback(groupCallsByDate(visibleCalls))
         }
     }
 
@@ -251,36 +248,6 @@ class RecentsFragment(
         } else {
             calls
         }
-    }
-
-    private fun updateNamesIfEmpty(calls: List<RecentCall>, contacts: List<Contact>, privateContacts: List<Contact>): List<RecentCall> {
-        if (calls.isEmpty()) return mutableListOf()
-
-        val contactsWithNumbers = contacts.filter { it.phoneNumbers.isNotEmpty() }
-        return calls.map { call ->
-            if (call.phoneNumber == call.name) {
-                val privateContact = privateContacts.firstOrNull { it.doesContainPhoneNumber(call.phoneNumber) }
-                val contact = contactsWithNumbers.firstOrNull { it.phoneNumbers.first().normalizedNumber == call.phoneNumber }
-
-                when {
-                    privateContact != null -> withUpdatedName(call = call, name = privateContact.getNameToDisplay())
-                    contact != null -> withUpdatedName(call = call, name = contact.getNameToDisplay())
-                    else -> call
-                }
-            } else {
-                call
-            }
-        }
-    }
-
-    private fun withUpdatedName(call: RecentCall, name: String): RecentCall {
-        return call.copy(
-            name = name,
-            groupedCalls = call.groupedCalls
-                ?.map { it.copy(name = name) }
-                ?.toMutableList()
-                ?.ifEmpty { null }
-        )
     }
 
     private fun groupCallsByDate(recentCalls: List<RecentCall>): MutableList<CallLogItem> {
