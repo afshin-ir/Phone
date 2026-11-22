@@ -149,6 +149,24 @@ class DialpadActivity : SimpleActivity() {
         toneGeneratorHelper = ToneGeneratorHelper(this, DIALPAD_TONE_LENGTH_MS)
 
         binding.dialpadWrapper.apply {
+            if (resources.configuration.locales[0].language == "fa") {
+                val persianDigits = "۰۱۲۳۴۵۶۷۸۹"
+                arrayOf(
+                    dialpad0,
+                    dialpad1,
+                    dialpad2,
+                    dialpad3,
+                    dialpad4,
+                    dialpad5,
+                    dialpad6,
+                    dialpad7,
+                    dialpad8,
+                    dialpad9
+                ).forEachIndexed { index, digitView ->
+                    digitView.text = persianDigits[index].toString()
+                }
+            }
+
             if (hasRussianLocale) {
                 dialpad2Letters.append("\nАБВГ")
                 dialpad3Letters.append("\nДЕЁЖЗ")
