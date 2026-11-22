@@ -30,6 +30,7 @@ import org.fossify.commons.extensions.copyToClipboard
 import org.fossify.commons.extensions.formatDateOrTime
 import org.fossify.commons.extensions.formatPhoneNumber
 import org.fossify.commons.extensions.formatSecondsToShortTimeString
+import java.text.NumberFormat
 import org.fossify.commons.extensions.formatTime
 import org.fossify.commons.extensions.getColoredDrawableWithColor
 import org.fossify.commons.extensions.getContrastColor
@@ -532,7 +533,31 @@ class RecentCallsAdapter(
                 }
 
                 itemRecentsDuration.apply {
-                    text = context.formatSecondsToShortTimeString(call.duration)
+                    text = if (Locale.getDefault().language == "fa") {
+                        val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
+                        var remainingSeconds = call.duration
+                        val durationParts = mutableListOf<String>()
+
+                        val hours = remainingSeconds / 3600
+                        if (hours > 0) {
+                            durationParts.add(context.getString(R.string.call_duration_hours, numberFormat.format(hours)))
+                            remainingSeconds %= 3600
+                        }
+
+                        val minutes = remainingSeconds / 60
+                        if (minutes > 0) {
+                            durationParts.add(context.getString(R.string.call_duration_minutes, numberFormat.format(minutes)))
+                            remainingSeconds %= 60
+                        }
+
+                        if (remainingSeconds > 0 || durationParts.isEmpty()) {
+                            durationParts.add(context.getString(R.string.call_duration_seconds, numberFormat.format(remainingSeconds)))
+                        }
+
+                        durationParts.joinToString(" و ")
+                    } else {
+                        context.formatSecondsToShortTimeString(call.duration)
+                    }
                     setTextColor(textColor)
                     beVisibleIf(shouldShowDuration)
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize * 0.8f)
