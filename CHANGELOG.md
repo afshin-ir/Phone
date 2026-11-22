@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.5] - 2026-11-22
+
+### Improved
+- Persian call history now uses Persian numerals for grouped call counts.
+- Replaced the dot between call time and duration with a clearer vertical separator.
+
+
 ## [1.12.4] - 2026-11-22
 
 ### Improved
