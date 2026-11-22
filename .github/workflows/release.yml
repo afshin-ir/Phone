@@ -55,6 +55,12 @@ jobs:
       - name: Build signed release APK
         run: ./gradlew assembleFossRelease
 
+      - name: Rename APK with the app version
+        run: |
+          version_name="$(sed -n 's/^VERSION_NAME=//p' gradle.properties)"
+          apk_path="app/build/outputs/apk/foss/release/phone-27-foss-release.apk"
+          mv "$apk_path" "app/build/outputs/apk/foss/release/Phone-${version_name}-FOSS-release.apk"
+
       - name: Extract release notes
         id: notes
         run: |
