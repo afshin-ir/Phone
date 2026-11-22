@@ -491,7 +491,12 @@ class RecentCallsAdapter(
                 }
 
                 if (call.groupedCalls != null) {
-                    nameToShow = SpannableString("$nameToShow (${call.groupedCalls.size})")
+                    val groupedCallsCount = if (Locale.getDefault().language == "fa") {
+                        NumberFormat.getIntegerInstance(Locale.getDefault()).format(call.groupedCalls.size)
+                    } else {
+                        call.groupedCalls.size.toString()
+                    }
+                    nameToShow = SpannableString("$nameToShow ($groupedCallsCount)")
                 }
 
                 if (textToHighlight.isNotEmpty() && nameToShow.contains(textToHighlight, true)) {
@@ -526,7 +531,7 @@ class RecentCallsAdapter(
                 }
 
                 itemRecentsDateTimeDurationSeparator.apply {
-                    text = "•"
+                    text = "│"
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize * 0.8f)
                     setTextColor(textColor)
                     beVisibleIf(shouldShowDuration)
