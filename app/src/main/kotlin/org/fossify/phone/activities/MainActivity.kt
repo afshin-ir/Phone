@@ -66,6 +66,8 @@ class MainActivity : SimpleActivity() {
     var cachedContacts = ArrayList<Contact>()
 
     private var contactsNeedRefresh = true
+    private var hasRequestedDefaultDialer = false
+    private var lastDefaultDialerState: Boolean? = null
     private var contactsRefreshInProgress = false
     private var contactsRefreshPending = false
     private var isActivityResumed = false
@@ -96,7 +98,9 @@ class MainActivity : SimpleActivity() {
         EventBus.getDefault().register(this)
         launchedDialer = savedInstanceState?.getBoolean(OPEN_DIAL_PAD_AT_LAUNCH) ?: false
 
-        if (isDefaultDialerSafely()) {
+        val isDefaultDialer = isDefaultDialerSafely()
+        lastDefaultDialerState = isDefaultDialer
+        if (isDefaultDialer) {
             checkContactPermissions()
 
             if (!config.wasOverlaySnackbarConfirmed && !Settings.canDrawOverlays(this)) {
@@ -135,6 +139,22 @@ class MainActivity : SimpleActivity() {
     override fun onResume() {
         super.onResume()
         isActivityResumed = true
+        val isDefaultDialer = isDefaultDialerSafely()
+        if (!isDefaultDialer) {
+            lastDefaultDialerState = false
+            if (!hasRequestedDefaultDialer) {
+                requestDefaultDialer()
+            }
+            return
+        }
+
+        val wasDefaultDialer = lastDefaultDialerState
+        lastDefaultDialerState = true
+        hasRequestedDefaultDialer = false
+        if (wasDefaultDialer == false) {
+            checkContactPermissions()
+        }
+
         if (storedShowTabs != config.showTabs) {
             config.lastUsedViewPagerPage = 0
             System.exit(0)
@@ -187,8 +207,11 @@ class MainActivity : SimpleActivity() {
         // we don't really care about the result, the app can work without being the default Dialer too
         if (requestCode == REQUEST_CODE_SET_DEFAULT_DIALER) {
             if (isDefaultDialerSafely()) {
+                lastDefaultDialerState = true
+                hasRequestedDefaultDialer = false
                 checkContactPermissions()
             } else {
+                lastDefaultDialerState = false
                 showDefaultDialerFallback()
             }
         } else if (requestCode == REQUEST_CODE_SET_DEFAULT_CALLER_ID && resultCode != Activity.RESULT_OK) {
@@ -307,6 +330,14 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun requestDefaultDialer() {
+        if (isDefaultDialerSafely()) {
+            lastDefaultDialerState = true
+            hasRequestedDefaultDialer = false
+            checkContactPermissions()
+            return
+        }
+
+        hasRequestedDefaultDialer = true
         if (isQPlus()) {
             val roleManager = getSystemService(RoleManager::class.java)
             if (roleManager == null || !roleManager.isRoleAvailable(RoleManager.ROLE_DIALER)) {
