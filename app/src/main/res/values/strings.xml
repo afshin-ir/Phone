@@ -99,4 +99,7 @@
     <string name="call_duration_hours">%1$s hours</string>
     <string name="call_duration_minutes">%1$s minutes</string>
     <string name="call_duration_seconds">%1$s seconds</string>
+    <string name="default_dialer_manual_instructions">This app is not the default phone app. To use its calling features, select it as the default phone app in Settings.</string>
+    <string name="open_default_apps_settings">Open default apps settings</string>
+    <string name="could_not_open_settings">Could not open Settings. Please open the Settings app manually.</string>
 </resources>
