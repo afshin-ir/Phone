@@ -1,2 +1,2 @@
-# Auto-generated release trigger. Build 1.12.5 with localized grouped counts and a vertical separator.
-1.12.5
+# Auto-generated release trigger. Build 1.12.6 with safe default dialer recovery.
+1.12.6
