@@ -1,2 +1,2 @@
-# Auto-generated release trigger. Build 1.12.6 with safe default dialer recovery.
-1.12.6
+# Auto-generated release trigger. Build 1.12.7 with IVR DTMF and default dialer role fixes.
+1.12.7
