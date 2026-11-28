@@ -2,6 +2,7 @@ package org.fossify.phone.activities
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.role.RoleManager
 import android.content.Intent
 import android.database.ContentObserver
 import android.net.Uri
@@ -18,6 +19,7 @@ import android.provider.Settings
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.snackbar.Snackbar
 import me.grantland.widget.AutofitHelper
@@ -94,7 +96,7 @@ class MainActivity : SimpleActivity() {
         EventBus.getDefault().register(this)
         launchedDialer = savedInstanceState?.getBoolean(OPEN_DIAL_PAD_AT_LAUNCH) ?: false
 
-        if (isDefaultDialer()) {
+        if (isDefaultDialerSafely()) {
             checkContactPermissions()
 
             if (!config.wasOverlaySnackbarConfirmed && !Settings.canDrawOverlays(this)) {
@@ -119,7 +121,7 @@ class MainActivity : SimpleActivity() {
                 }
             }
         } else {
-            launchSetDefaultDialerIntent()
+            requestDefaultDialer()
         }
 
         if (isQPlus() && (config.blockUnknownNumbers || config.blockHiddenNumbers)) {
@@ -184,7 +186,11 @@ class MainActivity : SimpleActivity() {
         super.onActivityResult(requestCode, resultCode, resultData)
         // we don't really care about the result, the app can work without being the default Dialer too
         if (requestCode == REQUEST_CODE_SET_DEFAULT_DIALER) {
-            checkContactPermissions()
+            if (isDefaultDialerSafely()) {
+                checkContactPermissions()
+            } else {
+                showDefaultDialerFallback()
+            }
         } else if (requestCode == REQUEST_CODE_SET_DEFAULT_CALLER_ID && resultCode != Activity.RESULT_OK) {
             toast(R.string.must_make_default_caller_id_app, length = Toast.LENGTH_LONG)
             baseConfig.blockUnknownNumbers = false
@@ -290,6 +296,51 @@ class MainActivity : SimpleActivity() {
 
     private fun updateMenuColors() {
         binding.mainMenu.updateColors()
+    }
+
+    private fun isDefaultDialerSafely(): Boolean {
+        return try {
+            isDefaultDialer()
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun requestDefaultDialer() {
+        if (isQPlus()) {
+            val roleManager = getSystemService(RoleManager::class.java)
+            if (roleManager == null || !roleManager.isRoleAvailable(RoleManager.ROLE_DIALER)) {
+                showDefaultDialerFallback()
+                return
+            }
+        }
+
+        try {
+            launchSetDefaultDialerIntent()
+        } catch (_: Exception) {
+            showDefaultDialerFallback()
+        }
+    }
+
+    private fun showDefaultDialerFallback() {
+        if (isFinishing || isDestroyed) return
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.default_phone_app_prompt)
+            .setMessage(R.string.default_dialer_manual_instructions)
+            .setPositiveButton(R.string.open_default_apps_settings) { _, _ ->
+                try {
+                    startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
+                } catch (_: Exception) {
+                    try {
+                        startActivity(Intent(Settings.ACTION_SETTINGS))
+                    } catch (_: Exception) {
+                        toast(R.string.could_not_open_settings)
+                    }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun checkContactPermissions() {
