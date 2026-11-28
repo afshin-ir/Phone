@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.7] - 2026-11-28
+
+### Fixed
+- Re-check the default dialer role whenever the app resumes, so returning from Android settings restores the required role before loading call data.
+- Keep in-call DTMF tones active longer and stop any previous tone before sending the next digit, improving compatibility with automated phone menus.
+
 ## [1.12.6] - 2026-11-28
 
 ### Fixed
@@ -318,7 +324,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#645]: https://github.com/FossifyOrg/Phone/issues/645
 [#696]: https://github.com/FossifyOrg/Phone/issues/696
 
-[Unreleased]: https://github.com/afshin-ir/Phone/compare/1.12.2...HEAD
+[Unreleased]: https://github.com/afshin-ir/Phone/compare/1.12.7...HEAD
+[1.12.7]: https://github.com/afshin-ir/Phone/compare/1.12.6...1.12.7
+[1.12.6]: https://github.com/afshin-ir/Phone/compare/1.12.5...1.12.6
 [1.12.2]: https://github.com/afshin-ir/Phone/compare/1.12.1...1.12.2
 [1.12.1]: https://github.com/afshin-ir/Phone/compare/1.12.0...1.12.1
 [1.12.0]: https://github.com/FossifyOrg/Phone/compare/1.11.1...1.12.0
