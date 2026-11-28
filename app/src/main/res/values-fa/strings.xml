@@ -184,4 +184,7 @@
     <string name="call_duration_hours">%1$s ساعت</string>
     <string name="call_duration_minutes">%1$s دقیقه</string>
     <string name="call_duration_seconds">%1$s ثانیه</string>
+    <string name="default_dialer_manual_instructions">برنامهٔ تلفن پیش‌فرض گوشی، برنامهٔ دیگری است. برای استفاده از قابلیت‌های تماس این برنامه، آن را در تنظیمات به‌عنوان برنامهٔ تلفن پیش‌فرض انتخاب کنید.</string>
+    <string name="open_default_apps_settings">باز کردن تنظیمات برنامه‌های پیش‌فرض</string>
+    <string name="could_not_open_settings">باز کردن تنظیمات ممکن نشد. لطفاً برنامهٔ تنظیمات گوشی را دستی باز کنید.</string>
 </resources>
