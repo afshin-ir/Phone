@@ -2,6 +2,7 @@ package org.fossify.phone.helpers
 
 import android.annotation.SuppressLint
 import android.os.Handler
+import android.os.Looper
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.InCallService
@@ -201,11 +202,29 @@ class CallManager {
 
         fun getState() = getPrimaryCall()?.getStateCompat()
 
+        private val dtmfHandler = Handler(Looper.getMainLooper())
+        private var dtmfCall: Call? = null
+        private var dtmfStopRunnable: Runnable? = null
+
         fun keypad(char: Char) {
-            call?.playDtmfTone(char)
-            Handler().postDelayed({
-                call?.stopDtmfTone()
-            }, DIALPAD_TONE_LENGTH_MS)
+            dtmfStopRunnable?.let(dtmfHandler::removeCallbacks)
+            dtmfStopRunnable = null
+            dtmfCall?.stopDtmfTone()
+            dtmfCall = null
+
+            val activeCall = call ?: return
+            activeCall.playDtmfTone(char)
+            dtmfCall = activeCall
+
+            val stopRunnable = Runnable {
+                activeCall.stopDtmfTone()
+                if (dtmfCall === activeCall) {
+                    dtmfCall = null
+                    dtmfStopRunnable = null
+                }
+            }
+            dtmfStopRunnable = stopRunnable
+            dtmfHandler.postDelayed(stopRunnable, IN_CALL_DTMF_TONE_LENGTH_MS)
         }
     }
 }
