@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.6] - 2026-11-28
+
+### Fixed
+- Added a clear recovery path when the app is no longer the default dialer, including a direct link to Android's default apps settings.
+
+
 ## [1.12.5] - 2026-11-22
 
 ### Improved
