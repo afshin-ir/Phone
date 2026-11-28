@@ -29,4 +29,5 @@ private const val PATH = "org.fossify.phone.action."
 const val ACCEPT_CALL = PATH + "ACCEPT_CALL"
 const val DECLINE_CALL = PATH + "DECLINE_CALL"
 
-const val DIALPAD_TONE_LENGTH_MS = 150L // The length of DTMF tones in milliseconds
+const val DIALPAD_TONE_LENGTH_MS = 150L // The length of dialpad feedback tones in milliseconds
+const val IN_CALL_DTMF_TONE_LENGTH_MS = 300L // Keep in-call DTMF tones long enough for IVR systems
